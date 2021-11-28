@@ -42,18 +42,15 @@ public class Graph {
             }
             int link = Integer.parseInt(numbers[i]);
             int gap = Integer.parseInt(numbers[i + 1]) - link;
-            if (gap == 0 && nodeCounter == xCount) {
-                gap = 1;
-            }
-            for (int j = 0; j < gap; j++) {
+            for (int j = 0; j < gap; j = j + 2) {
                 if (getNodeByName(String.valueOf(nodeCounter), Proportion.X) == null) {
                     Node node = new Node(String.valueOf(nodeCounter), Proportion.X);
                     nodes.add(node);
                 }
-                int neighbourNum = Integer.parseInt(numbers[Integer.parseInt(numbers[i]) - 1]);
+                int neighbourNum = Integer.parseInt(numbers[Integer.parseInt(numbers[i]) - 1 + j]);
 
                 if (getNodeByName(String.valueOf(neighbourNum), Proportion.Y) == null && neighbourNum != 0) {
-                    Node node = new Node(numbers[Integer.parseInt(numbers[i]) - 1], Proportion.Y);
+                    Node node = new Node(numbers[Integer.parseInt(numbers[i]) - 1 + j], Proportion.Y);
                     getNodeByName(String.valueOf(nodeCounter), Proportion.X).addNeighbour(node);
                     node.addNeighbour(getNodeByName(String.valueOf(nodeCounter), Proportion.X));
                     nodes.add(node);
@@ -66,7 +63,8 @@ public class Graph {
                 }
 
                 Edge edge = new Edge(getNodeByName(String.valueOf(nodeCounter), Proportion.X),
-                        getNodeByName(String.valueOf(neighbourNum), Proportion.Y));
+                        getNodeByName(String.valueOf(neighbourNum), Proportion.Y),
+                        Integer.parseInt(numbers[Integer.parseInt(numbers[i]) + j]));
                 edges.add(edge);
             }
 
