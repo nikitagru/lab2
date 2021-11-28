@@ -8,15 +8,22 @@ public class Main {
     public static void main(String[] args) throws IOException {
         File file = new File("in.txt");
         Graph graph = new Graph(file);
+        List<Node> resultCombination = fordFalkerson(graph);
         System.out.println();
     }
 
-    private static void fordFalkerson(Graph graph) {
+    private static List<Node> fordFalkerson(Graph graph) {
         List<Node> combination = new ArrayList<>();
 
         for (int i = 0; i < graph.getxCount(); i++) {
-            combination.addAll(bfs(graph));
+            try {
+                combination.addAll(Objects.requireNonNull(bfs(graph)));
+            } catch (NullPointerException ignored) {
+
+            }
         }
+
+        return combination;
     }
 
     private static List<Node> createCombonation(Graph graph, Deque<Node> nodeDeque) {
@@ -27,8 +34,8 @@ public class Main {
                 graph.getEdges().stream().anyMatch(y -> y.getSecond().equals(drain) && y.getFirst().equals(x))
         ).findFirst().get();
 
-        Node xNode = nodeDeque.stream().filter(x ->
-                graph.getEdges().stream().anyMatch(y -> y.getSecond().equals(drain) && y.getFirst().equals(x))
+        Node xNode = graph.getNodes().stream().filter(x ->
+                graph.getEdges().stream().anyMatch(y -> y.getSecond().equals(drainPrev) && y.getFirst().equals(x))
         ).findFirst().get();
 
         combination.add(xNode);
@@ -57,9 +64,13 @@ public class Main {
         source.setVisited(true);
 
         while (!nodeDeque.isEmpty()) {
-            Node node = nodeDeque.getFirst();
+            Node node = nodeDeque.pollFirst();
 
-            for (Node neighbour : node.getNeighbours()) {
+            List<Edge> edgesFromNode = graph.getEdges().stream().filter(x -> x.getFirst().equals(node))
+                    .collect(Collectors.toList());
+
+            for (Edge edgeToNeighbour : edgesFromNode) {
+                Node neighbour = edgeToNeighbour.getSecond();
                 if (!neighbour.isVisited()) {
                     nodeDeque.addLast(neighbour);
                     neighbour.setVisited(true);
@@ -70,5 +81,6 @@ public class Main {
                 }
             }
         }
+        return null;
     }
 }

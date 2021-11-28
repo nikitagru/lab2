@@ -20,6 +20,7 @@ public class Graph {
 
         String[] numbers;
         String line = bfReader.readLine();
+        line = bfReader.readLine();
 
         StringBuffer sb = new StringBuffer();
 
@@ -71,6 +72,8 @@ public class Graph {
 
             nodeCounter++;
         }
+
+        addSourceAndDrain();
     }
 
     public List<Node> getNodes() {
@@ -94,22 +97,27 @@ public class Graph {
     }
 
     private void addSourceAndDrain() {
+        List<Node> xNodes = new ArrayList<>();
+        List<Node> yNodes = new ArrayList<>();
+
+        for (Node node : nodes) {
+            if (node.getProportion().equals(Proportion.X)) {
+                xNodes.add(node);
+            } else if (node.getProportion().equals(Proportion.Y)){
+                yNodes.add(node);
+            }
+        }
+
         Node source = new Node("s");
         Node drain = new Node("t");
         nodes.add(source);
         nodes.add(drain);
-
-        List<Node> xNodes = nodes.stream().filter(x -> x.getProportion().equals(Proportion.X))
-                .collect(Collectors.toList());
 
         for (int i = 0; i < xNodes.size(); i++) {
             Edge edge = new Edge(source, xNodes.get(i));
             edges.add(edge);
             source.addNeighbour(xNodes.get(i));
         }
-
-        List<Node> yNodes = nodes.stream().filter(x -> x.getProportion().equals(Proportion.Y))
-                .collect(Collectors.toList());
 
         for (int i = 0; i < yNodes.size(); i++) {
             Edge edge = new Edge(yNodes.get(i), drain);
