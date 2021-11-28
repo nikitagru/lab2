@@ -4,20 +4,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Graph {
     private List<Node> nodes = new ArrayList<>();
     private List<Edge> edges = new ArrayList<>();
+    private int xCount;
 
     public Graph (File file) throws IOException {
         BufferedReader bfReader = new BufferedReader(new FileReader(file));
 
         String[] sizes = bfReader.readLine().split(" ");
 
-        int xCount = Integer.parseInt(sizes[0]);
-        int yCount = Integer.parseInt(sizes[1]);
-
-        int count = Integer.parseInt(bfReader.readLine());
+        xCount = Integer.parseInt(sizes[0]);
 
         String[] numbers;
         String line = bfReader.readLine();
@@ -42,7 +41,10 @@ public class Graph {
             }
             int link = Integer.parseInt(numbers[i]);
             int gap = Integer.parseInt(numbers[i + 1]) - link;
-            for (int j = 0; j < gap; j = j + 2) {
+            if (gap == 0 && nodeCounter == xCount) {
+                gap = 1;
+            }
+            for (int j = 0; j < gap; j++) {
                 if (getNodeByName(String.valueOf(nodeCounter), Proportion.X) == null) {
                     Node node = new Node(String.valueOf(nodeCounter), Proportion.X);
                     nodes.add(node);
@@ -63,20 +65,56 @@ public class Graph {
                 }
 
                 Edge edge = new Edge(getNodeByName(String.valueOf(nodeCounter), Proportion.X),
-                        getNodeByName(String.valueOf(neighbourNum), Proportion.Y),
-                        Integer.parseInt(numbers[Integer.parseInt(numbers[i]) + j]));
+                        getNodeByName(String.valueOf(neighbourNum), Proportion.Y));
                 edges.add(edge);
             }
 
             nodeCounter++;
-
-            if (nodeCounter == 3) {
-                System.out.println();
-            }
         }
+    }
+
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public int getxCount() {
+        return xCount;
+    }
+
+    public void setxCount(int xCount) {
+        this.xCount = xCount;
     }
 
     private Node getNodeByName(String name, Proportion proportion) {
         return nodes.stream().filter(x -> x.getName().equals(name) && x.getProportion().equals(proportion)).findFirst().orElse(null);
+    }
+
+    private void addSourceAndDrain() {
+        Node source = new Node("s");
+        Node drain = new Node("t");
+        nodes.add(source);
+        nodes.add(drain);
+
+        List<Node> xNodes = nodes.stream().filter(x -> x.getProportion().equals(Proportion.X))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < xNodes.size(); i++) {
+            Edge edge = new Edge(source, xNodes.get(i));
+            edges.add(edge);
+            source.addNeighbour(xNodes.get(i));
+        }
+
+        List<Node> yNodes = nodes.stream().filter(x -> x.getProportion().equals(Proportion.Y))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < yNodes.size(); i++) {
+            Edge edge = new Edge(yNodes.get(i), drain);
+            edges.add(edge);
+            drain.addNeighbour(yNodes.get(i));
+        }
     }
 }

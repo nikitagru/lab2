@@ -5,10 +5,23 @@ public class Node {
     private String name;
     private List<Node> neighbours = new ArrayList<>();
     private Proportion proportion;
+    private boolean visited = false;
 
     public Node(String name, Proportion proportion) {
         this.name = name;
         this.proportion = proportion;
+    }
+
+    public Node(String name) {
+        this.name = name;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 
     public Proportion getProportion() {
