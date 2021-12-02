@@ -28,33 +28,43 @@ public class Main {
 
         Pair finalRoute = modifiedBFS(graph);
 
+        List<Edge> lastNodes = findLastEdges(graph, (HashMap<Node, Node>) finalRoute.getSecond());
+
         if ((boolean) finalRoute.getFirst()) {
             graph.deleteSourceAndDrainEdges(false);
         }
 
-        printResult(graph, (HashMap<Node, Node>) finalRoute.getSecond());
+        printResult(graph, lastNodes);
 
         return combination;
     }
 
-    private static List<Node> createCombonation(Graph graph, Deque<Node> nodeDeque) {
-        List<Node> combination = new ArrayList<>();
+    private static List<Edge> findLastEdges(Graph graph, HashMap<Node, Node> previous) {
+        Node drain = graph.getNodes().stream().filter(x -> x.getName().equals("t")).findFirst().get();
+        List<Edge> result = new ArrayList<>();
+        Node prev = drain;
 
-        Node drain = nodeDeque.pollLast();
-        Node drainPrev = nodeDeque.stream().filter(x ->
-                graph.getEdges().stream().anyMatch(y -> y.getSecond().equals(drain) && y.getFirst().equals(x))
-        ).findFirst().get();
+        while (true) {
+            Node node = previous.get(prev);
 
-        Node xNode = graph.getNodes().stream().filter(x ->
-                graph.getEdges().stream().anyMatch(y -> y.getSecond().equals(drainPrev) && y.getFirst().equals(x))
-        ).findFirst().get();
+            Node finalPrev = prev;
 
-        combination.add(xNode);
-        combination.add(drainPrev);
+            if (node.getProportion() != null && !node.getProportion().equals(Proportion.Y)) {
+                Edge edge = graph.getEdges().stream().filter(x -> x.getFirst().equals(node) && x.getSecond().equals(finalPrev)).findFirst().get();
 
-//        updateGraph(graph, new Node[] {xNode, drainPrev});
+                result.add(edge);
+            } else if (finalPrev.getProportion() != null && node.getProportion() != null) {
+                graph.getEdges().stream().filter(x -> x.getFirst().equals(finalPrev) && x.getSecond().equals(node)).findFirst().get().setReversed(false);
+            }
 
-        return combination;
+            if (node.getName().equals("s")) {
+                break;
+            }
+
+            prev = node;
+        }
+
+        return result;
     }
 
     private static void updateGraph(Graph graph, HashMap<Node, Node> previous) {
@@ -144,7 +154,13 @@ public class Main {
         return new Pair(false, null);
     }
 
-    private static void printResult(Graph graph, HashMap<Node, Node> previous) {
+    private static void printResult(Graph graph, List<Edge> complementaryEdges) {
+        List<Edge> finalEdges = graph.getEdges().stream().filter(x -> x.getFirst().getProportion().equals(Proportion.X) && x.isReversed())
+                .collect(Collectors.toList());
 
+        
+
+        finalEdges.addAll(complementaryEdges);
+        System.out.println();
     }
 }

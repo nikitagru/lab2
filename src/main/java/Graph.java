@@ -134,6 +134,7 @@ public class Graph {
         } else {
             sourceAndDrainEdges = edges.stream().filter(x -> x.getFirst().getName().equals("s")
                     || x.getSecond().getName().equals("t")).collect(Collectors.toList());
+
         }
         edges.removeAll(sourceAndDrainEdges);
     }
