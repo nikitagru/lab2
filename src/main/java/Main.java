@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -28,11 +29,14 @@ public class Main {
 
         Pair finalRoute = modifiedBFS(graph);
 
-        List<Edge> lastNodes = findLastEdges(graph, (HashMap<Node, Node>) finalRoute.getSecond());
-
+        List<Edge> lastNodes = null;
         if ((boolean) finalRoute.getFirst()) {
-            graph.deleteSourceAndDrainEdges(false);
+            lastNodes = findLastEdges(graph, (HashMap<Node, Node>) finalRoute.getSecond());
         }
+
+
+        graph.deleteSourceAndDrainEdges(false);
+
 
         printResult(graph, lastNodes);
 
@@ -102,14 +106,12 @@ public class Main {
                 if (!previous.containsKey(neighbour)) {
                     previous.put(neighbour, node);
                 }
-//                if (!neighbour.isVisited()) {
-                    nodeDeque.addLast(neighbour);
-                    neighbour.setVisited(true);
+                nodeDeque.addLast(neighbour);
+                neighbour.setVisited(true);
 
-                    if (neighbour.getName().equals("t")) {
-                        return new Pair(true, previous);
-                    }
-//                }
+                if (neighbour.getName().equals("t")) {
+                    return new Pair(true, previous);
+                }
             }
         }
         return new Pair(false, null);
@@ -141,14 +143,12 @@ public class Main {
                 if (!previous.containsKey(neighbour)) {
                     previous.put(neighbour, node);
                 }
-//                if (!neighbour.isVisited()) {
-                    nodeDeque.addLast(neighbour);
-                    neighbour.setVisited(true);
+                nodeDeque.addLast(neighbour);
+                neighbour.setVisited(true);
 
-                    if (neighbour.getName().equals("t")) {
-                        return new Pair(true, previous);
-                    }
-//                }
+                if (neighbour.getName().equals("t")) {
+                    return new Pair(true, previous);
+                }
             }
         }
         return new Pair(false, null);
@@ -158,9 +158,25 @@ public class Main {
         List<Edge> finalEdges = graph.getEdges().stream().filter(x -> x.getFirst().getProportion().equals(Proportion.X) && x.isReversed())
                 .collect(Collectors.toList());
 
-        
+        if (complementaryEdges != null) {
+            finalEdges.addAll(complementaryEdges);
+        }
 
-        finalEdges.addAll(complementaryEdges);
-        System.out.println();
+        try(FileWriter writer = new FileWriter("out.txt", false)) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("[ ");
+            for (int i = 0; i < graph.getxCount(); i++) {
+                int finalI = i;
+                Node nodeX = graph.getNodes().stream().filter(x -> x.getName().equals(String.valueOf(finalI))).findFirst().get();
+
+                List<Edge> edgesFromX = graph.getEdges().stream().filter(x -> x.getFirst().equals(nodeX)).collect(Collectors.toList());
+                
+            }
+
+            writer.append(sb.toString());
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
