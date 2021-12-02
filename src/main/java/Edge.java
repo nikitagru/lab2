@@ -1,6 +1,7 @@
 public class Edge {
     private Node first;
     private Node second;
+    private boolean reversed = false;
 
     public Edge(Node first, Node second) {
         this.first = first;
@@ -21,5 +22,13 @@ public class Edge {
 
     public void setSecond(Node second) {
         this.second = second;
+    }
+
+    public boolean isReversed() {
+        return reversed;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 }

@@ -125,4 +125,16 @@ public class Graph {
             drain.addNeighbour(yNodes.get(i));
         }
     }
+
+    public void deleteSourceAndDrainEdges(boolean isReversed) {
+        List<Edge> sourceAndDrainEdges;
+        if (isReversed) {
+            sourceAndDrainEdges = edges.stream().filter(x -> (x.getFirst().getName().equals("s")
+                    || x.getSecond().getName().equals("t")) && x.isReversed()).collect(Collectors.toList());
+        } else {
+            sourceAndDrainEdges = edges.stream().filter(x -> x.getFirst().getName().equals("s")
+                    || x.getSecond().getName().equals("t")).collect(Collectors.toList());
+        }
+        edges.removeAll(sourceAndDrainEdges);
+    }
 }
