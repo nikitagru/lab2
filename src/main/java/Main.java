@@ -166,14 +166,20 @@ public class Main {
             StringBuffer sb = new StringBuffer();
             sb.append("[ ");
             for (int i = 0; i < graph.getxCount(); i++) {
-                int finalI = i;
-                Node nodeX = graph.getNodes().stream().filter(x -> x.getName().equals(String.valueOf(finalI))).findFirst().get();
-
+                int finalI = i + 1;
+                Node nodeX = graph.getNodes().stream().filter(x -> x.getName().equals(String.valueOf(finalI)) && x.getProportion().equals(Proportion.X)).findFirst().get();
                 List<Edge> edgesFromX = graph.getEdges().stream().filter(x -> x.getFirst().equals(nodeX)).collect(Collectors.toList());
-                
+
+                for (Edge edge : edgesFromX) {
+                    if (finalEdges.contains(edge)) {
+                        sb.append(edge.getSecond().getName()).append(" ");
+                    } else {
+                        sb.append("0 ");
+                    }
+                }
             }
 
-            writer.append(sb.toString());
+            writer.append(sb.toString()).append("]");
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
